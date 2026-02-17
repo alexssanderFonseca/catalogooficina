@@ -1,0 +1,67 @@
+server:
+  port: ${SERVER_PORT:9091}
+
+spring:
+  flyway:
+    enabled: true
+  datasource:
+    url: ${DATASOURCE_URL}
+    username: ${DATASOURCE_USERNAME}
+    password: ${DATASOURCE_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics,prometheus,mappings
+  endpoint:
+    health:
+      show-details: always
+
+otel:
+  service:
+    name: catalogo
+    resource:
+      attributes:
+        environment: ${OTEL_ENVIRONMENT:k8s} # Default to k8s if not set
+        version: 1.0.0
+        team: backend
+
+  traces:
+    exporter: otlp
+    endpoint: ${OTEL_ENDPOINT}
+    sampler: always_on
+
+  metrics:
+    exporter: otlp
+    endpoint: ${OTEL_ENDPOINT}
+
+jwt:
+  key: ${JWT_KEY}
+
+feign:
+  client:
+    config:
+      cliente-service:
+        url: ${FEIGN_CLIENT_CLIENTE_URL}
+      catalogo-service:
+        url: ${FEIGN_CLIENT_CATALOGO_URL}
+      orcamento-service:
+        url: ${FEIGN_CLIENT_ORCAMENTO_URL}
+
+  logs:
+    exporter: none
+
+  instrumentation:
+    spring-webmvc:
+      enabled: true
+    jdbc:
+      enabled: true
+    logback-appender:
+      enabled: true
+    micrometer:
+      enabled: true

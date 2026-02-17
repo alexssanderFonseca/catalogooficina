@@ -1,0 +1,38 @@
+services:
+  db:
+    image: postgres:15
+    container_name: catalogo_db
+    restart: always
+    environment:
+      POSTGRES_DB: catalogo_db
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5433:5432" # Use a different host port to avoid conflicts
+    volumes:
+      - catalogo_postgres_data:/var/lib/postgresql/data
+    networks:
+      - catalogo_network
+
+  catalogo_app:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    container_name: catalogo_app
+    restart: always
+    ports:
+      - "8081:8080" # Use a different host port
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/catalogo_db
+      SPRING_DATASOURCE_USERNAME: user
+      SPRING_DATASOURCE_PASSWORD: password
+    depends_on:
+      - db
+    networks:
+      - catalogo_network
+
+volumes:
+  catalogo_postgres_data:
+
+networks:
+  catalogo_network:

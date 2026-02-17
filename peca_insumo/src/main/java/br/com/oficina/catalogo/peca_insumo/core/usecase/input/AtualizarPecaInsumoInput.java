@@ -1,0 +1,12 @@
+package br.com.oficina.catalogo.peca_insumo.core.usecase.input;
+
+import java.math.BigDecimal;
+import java.util.UUID;
+
+public record AtualizarPecaInsumoInput(
+    UUID id,
+    Integer quantidadeEstoque,
+    BigDecimal precoCusto,
+    BigDecimal precoVenda,
+    Boolean ativo
+) {}

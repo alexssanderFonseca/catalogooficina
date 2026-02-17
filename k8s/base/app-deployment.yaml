@@ -1,0 +1,80 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: catalogo-app
+  namespace: oficina-ns
+  labels:
+    app: catalogo-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: catalogo-app
+  template:
+    metadata:
+      annotations:
+        ad.datadoghq.com/catalogo-app.logs: '[{"source": "java", "service": "catalogo"}]'
+      labels:
+        app: catalogo-app
+        admission.datadoghq.com/enabled: "true"
+    spec:
+      containers:
+        - name: catalogo-app
+          image: alexmarquesfa/catalogooficina:latest
+          imagePullPolicy: Always
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              export OTEL_EXPORTER_OTLP_ENDPOINT="http://${DD_AGENT_HOST}:4318"
+              exec java -jar app.jar
+          ports:
+            - containerPort: 9091
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:postgresql://catalogo-postgres-svc:5432/catalogo_db"
+            - name: SPRING_DATASOURCE_USERNAME
+              value: "userCatalogoDb"
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: catalogo-postgres-secret
+                  key: SPRING_DATASOURCE_PASSWORD
+            - name: JWT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: catalogo-secret
+                  key: JWT_KEY
+            - name: ENV_NAME
+              valueFrom:
+                configMapKeyRef:
+                  key: ENV_NAME
+                  name: catalogo-app-config
+            - name: DD_AGENT_HOST
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "500m"
+            limits:
+              memory: "700Mi"
+              cpu: "800m"
+
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 9091
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 10
+
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 9091
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
