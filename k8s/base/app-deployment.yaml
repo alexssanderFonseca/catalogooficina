@@ -31,7 +31,10 @@ spec:
             - containerPort: 9091
           env:
             - name: SPRING_DATASOURCE_URL
-              value: "jdbc:postgresql://catalogo-postgres-svc:5432/catalogo_db"
+              valueFrom:
+                secretKeyRef:
+                  name: catalogo-secret
+                  key: RDS_URL
             - name: SPRING_DATASOURCE_USERNAME
               value: "userCatalogoDb"
             - name: SPRING_DATASOURCE_PASSWORD
@@ -39,11 +42,6 @@ spec:
                 secretKeyRef:
                   name: catalogo-postgres-secret
                   key: SPRING_DATASOURCE_PASSWORD
-            - name: JWT_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: catalogo-secret
-                  key: JWT_KEY
             - name: ENV_NAME
               valueFrom:
                 configMapKeyRef:

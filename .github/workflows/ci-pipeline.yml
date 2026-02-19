@@ -8,21 +8,25 @@ on:
 jobs:
   build-and-test:
     name: Build e Testes - Catalogo
-    runs-on: ubuntu-latest
+    uses: ./.github/workflows/reusable-build.yml
+    secrets: inherit
 
-    steps:
-      - name: Checkout do código
-        uses: actions/checkout@v4
+  validate-docker:
+    name: Validação Docker - Catalogo
+    needs: build-and-test
+    uses: ./.github/workflows/reusable-docker.yml
+    secrets: inherit
+    with:
+      context: .
+      dockerfile: Dockerfile
 
-      - name: Configurar JDK 21
-        uses: actions/setup-java@v4
-        with:
-          java-version: '21'
-          distribution: 'temurin'
-          cache: 'gradle'
-
-      - name: Conceder permissão de execução ao Gradle
-        run: chmod +x gradlew
-
-      - name: Executar build completo e testes
-        run: ./gradlew :catalogo:clean :catalogo:build --no-daemon --refresh-dependencies
+  create-pull-request:
+    name: Criar Pull Request - Catalogo
+    needs: [validate-docker]
+    permissions:
+      contents: write
+      pull-requests: write
+    uses: ./.github/workflows/reusable-pr.yml
+    secrets: inherit
+    with:
+      branch-name: ${{ github.ref_name }}

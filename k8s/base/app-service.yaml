@@ -6,11 +6,10 @@ metadata:
   labels:
     app: catalogo-app
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     app: catalogo-app
   ports:
   - protocol: TCP
     port: 80
     targetPort: 9091
-    nodePort: 30083
