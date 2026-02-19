@@ -1,9 +1,8 @@
-package br.com.postech.oficina.catalogo.peca_insumo.core.usecase.impl;
+package br.com.oficina.catalogo.peca_insumo.core.usecase.impl;
 
 import br.com.oficina.catalogo.peca_insumo.adapter.in.controller.request.DarBaixaEstoqueRequest;
-import br.com.oficina.catalogo.peca_insumo.core.domain.exception.PecaInsumoIndisponivelException;
+import br.com.oficina.catalogo.peca_insumo.core.domain.exception.PecaInsumoBaixaEstoqueFalhaException;
 import br.com.oficina.catalogo.peca_insumo.core.port.out.PecaInsumoRepository;
-import br.com.oficina.catalogo.peca_insumo.core.usecase.impl.DarBaixaEstoquePecaInsumoUseCaseImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -58,7 +57,7 @@ class DarBaixaEstoquePecaInsumoUseCaseImplTest {
         List<DarBaixaEstoqueRequest> requests = Collections.singletonList(request);
 
         // When & Then
-        assertThrows(PecaInsumoIndisponivelException.class, () ->
+        assertThrows(PecaInsumoBaixaEstoqueFalhaException.class, () ->
                 darBaixaEstoquePecaInsumoUseCase.darBaixaEstoque(requests));
         verify(pecaInsumoRepository, times(1)).decrementarEstoque(itemId, 10);
     }
@@ -92,7 +91,7 @@ class DarBaixaEstoquePecaInsumoUseCaseImplTest {
         when(pecaInsumoRepository.decrementarEstoque(itemId2, 5)).thenReturn(false); // This one fails
 
         // When & Then
-        assertThrows(PecaInsumoIndisponivelException.class, () ->
+        assertThrows(PecaInsumoBaixaEstoqueFalhaException.class, () ->
                 darBaixaEstoquePecaInsumoUseCase.darBaixaEstoque(requests));
 
         // Verify that the first item was processed, but the second failed

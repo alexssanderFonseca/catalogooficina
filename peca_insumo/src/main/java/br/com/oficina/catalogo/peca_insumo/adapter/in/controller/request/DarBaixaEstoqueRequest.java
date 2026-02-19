@@ -11,6 +11,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
+@EqualsAndHashCode
 public class DarBaixaEstoqueRequest {
     @NotNull(message = "O ID do item não pode ser nulo")
     private UUID itemId;

@@ -1,18 +1,18 @@
-package br.com.postech.oficina.catalogo.peca_insumo.adapter.controller;
+package br.com.oficina.catalogo.peca_insumo.adapter.controller;
 
 import br.com.oficina.catalogo.peca_insumo.adapter.in.controller.PecaInsumoController;
 import br.com.oficina.catalogo.peca_insumo.adapter.in.controller.PecaInsumoControllerMapper;
 import br.com.oficina.catalogo.peca_insumo.adapter.in.controller.handler.PecaInsumoControllerAdvice;
 import br.com.oficina.catalogo.peca_insumo.adapter.in.controller.request.DarBaixaEstoqueRequest;
-import br.com.oficina.catalogo.peca_insumo.core.domain.exception.PecaInsumoIndisponivelException;
+import br.com.oficina.catalogo.peca_insumo.core.domain.exception.PecaInsumoBaixaEstoqueFalhaException;
 import br.com.oficina.catalogo.peca_insumo.core.port.in.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -24,23 +24,29 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest
-@ContextConfiguration(classes = {PecaInsumoController.class, PecaInsumoControllerAdvice.class}) // Include the advice
+@WebMvcTest(PecaInsumoController.class)
+@Import(PecaInsumoControllerAdvice.class)
 class PecaInsumoControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    private ObjectMapper objectMapper = new ObjectMapper();
 
-    @MockitoBean private DarBaixaEstoquePecaInsumoUseCase darBaixaEstoquePecaInsumoUseCase;
-    @MockitoBean private CadastrarPecaInsumoUseCase cadastrarPecaInsumoUseCase;
-    @MockitoBean private ListarPecasInsumoUseCase listarPecasInsumoUseCase;
-    @MockitoBean private BuscarPecaInsumoPorIdUseCase buscarPecaInsumoPorIdUseCase;
-    @MockitoBean private AtualizarPecaInsumoUseCase atualizarPecaInsumoUseCase;
-    @MockitoBean private DeletarPecaInsumoUseCase deletarPecaInsumoUseCase;
-    @MockitoBean private PecaInsumoControllerMapper mapper;
+    @MockitoBean
+    private DarBaixaEstoquePecaInsumoUseCase darBaixaEstoquePecaInsumoUseCase;
+    @MockitoBean
+    private CadastrarPecaInsumoUseCase cadastrarPecaInsumoUseCase;
+    @MockitoBean
+    private ListarPecasInsumoUseCase listarPecasInsumoUseCase;
+    @MockitoBean
+    private BuscarPecaInsumoPorIdUseCase buscarPecaInsumoPorIdUseCase;
+    @MockitoBean
+    private AtualizarPecaInsumoUseCase atualizarPecaInsumoUseCase;
+    @MockitoBean
+    private DeletarPecaInsumoUseCase deletarPecaInsumoUseCase;
+    @MockitoBean
+    private PecaInsumoControllerMapper mapper;
 
 
     private DarBaixaEstoqueRequest validRequest;
@@ -67,16 +73,16 @@ class PecaInsumoControllerTest {
     }
 
     @Test
-    void shouldReturn422WhenStockIsInsufficient() throws Exception {
+    void shouldReturn400WhenStockIsInsufficient() throws Exception {
         // Given
-        doThrow(new PecaInsumoIndisponivelException())
+        doThrow(new PecaInsumoBaixaEstoqueFalhaException(List.of(validRequest.getItemId())))
                 .when(darBaixaEstoquePecaInsumoUseCase).darBaixaEstoque(anyList());
 
         // When & Then
         mockMvc.perform(put("/pecas/dar-baixa-estoque")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(validRequests)))
-                .andExpect(status().isUnprocessableEntity());
+                .andExpect(status().isBadRequest());
 
         verify(darBaixaEstoquePecaInsumoUseCase, times(1)).darBaixaEstoque(anyList());
     }

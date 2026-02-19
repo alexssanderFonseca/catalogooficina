@@ -1,4 +1,4 @@
-package br.com.postech.oficina.catalogo.peca_insumo.adapter.persistence;
+package br.com.oficina.catalogo.peca_insumo.adapter.persistence;
 
 import br.com.oficina.catalogo.peca_insumo.adapter.out.persistence.PecaInsumoJpaRepositoryAdapter;
 import br.com.oficina.catalogo.peca_insumo.adapter.out.persistence.entity.PecaInsumoEntity;

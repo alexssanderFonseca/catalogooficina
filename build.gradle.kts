@@ -62,6 +62,9 @@ allprojects {
         options.compilerArgs.add("-parameters")
     }
 
+    tasks.withType<Test> {
+        useJUnitPlatform()
+    }
 }
 
 

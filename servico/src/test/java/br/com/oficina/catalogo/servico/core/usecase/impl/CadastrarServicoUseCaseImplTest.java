@@ -1,4 +1,4 @@
-package br.com.alexsdm.postech.oficina.catalogo.servico.core.usecase.impl;
+package br.com.oficina.catalogo.servico.core.usecase.impl;
 
 
 
