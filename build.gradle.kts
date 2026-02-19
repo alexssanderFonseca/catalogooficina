@@ -1,10 +1,8 @@
-import org.gradle.testing.jacoco.plugins.JacocoPluginExtension // Adicionado import
-
 plugins {
 	id("org.springframework.boot") version "4.0.2"
 	id("io.spring.dependency-management") version "1.1.7"
 	java
-	jacoco // Adicionado o plugin JaCoCo
+	jacoco
 }
 
 allprojects {
@@ -12,9 +10,9 @@ allprojects {
 	version = "0.0.1-SNAPSHOT"
     extra["springCloudVersion"] = "2025.1.0"
 
-
     apply(plugin = "java-library")
     apply(plugin = "io.spring.dependency-management")
+    apply(plugin = "jacoco")
 
     configure<JavaPluginExtension> {
         sourceCompatibility = JavaVersion.VERSION_21
@@ -28,7 +26,6 @@ allprojects {
         imports {
             mavenBom(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES)
             mavenBom("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}")
-
         }
     }
 
@@ -53,7 +50,6 @@ allprojects {
         implementation("org.flywaydb:flyway-core")
         implementation("org.flywaydb:flyway-database-postgresql")
         testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
-
         testImplementation("org.springframework.boot:spring-boot-starter-test")
         testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     }
@@ -64,12 +60,35 @@ allprojects {
 
     tasks.withType<Test> {
         useJUnitPlatform()
+        finalizedBy(tasks.jacocoTestReport)
+    }
+
+    tasks.jacocoTestReport {
+        dependsOn(tasks.test)
+        reports {
+            xml.required.set(true)
+            html.required.set(true)
+        }
+        classDirectories.setFrom(
+            sourceSets.main.get().output.asFileTree.matching {
+                exclude(
+                    "**/entity/**",
+                    "**/dto/**",
+                    "**/request/**",
+                    "**/response/**",
+                    "**/config/**",
+                    "**/exception/**",
+                    "**/mapper/**",
+                    "**/common/**",
+                    "**/*Application*",
+                    "**/*MapperImpl*"
+                )
+            }
+        )
     }
 }
 
-
 description = "Demo project for Spring Boot"
-
 
 dependencies {
     implementation(project(":peca_insumo"))
@@ -78,20 +97,6 @@ dependencies {
     implementation("org.postgresql:postgresql:42.7.3")
 }
 
-configure<JacocoPluginExtension> {
+jacoco {
     toolVersion = "0.8.12"
-}
-
-tasks.withType<Test> {
-    useJUnitPlatform()
-    finalizedBy(tasks.jacocoTestReport)
-}
-
-
-tasks.jacocoTestReport {
-    dependsOn(tasks.test)
-    reports {
-        xml.required.set(true)
-        html.required.set(true)
-    }
 }
