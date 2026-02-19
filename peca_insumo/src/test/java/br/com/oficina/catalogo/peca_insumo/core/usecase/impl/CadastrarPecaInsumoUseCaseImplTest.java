@@ -1,4 +1,4 @@
-package br.com.postech.oficina.catalogo.peca_insumo.core.usecase.impl;
+package br.com.oficina.catalogo.peca_insumo.core.usecase.impl;
 
 import br.com.oficina.catalogo.peca_insumo.core.domain.entity.PecaInsumo;
 import br.com.oficina.catalogo.peca_insumo.core.port.out.PecaInsumoRepository;
