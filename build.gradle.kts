@@ -69,22 +69,23 @@ allprojects {
             xml.required.set(true)
             html.required.set(true)
         }
-        classDirectories.setFrom(
-            sourceSets.main.get().output.asFileTree.matching {
-                exclude(
-                    "**/entity/**",
-                    "**/dto/**",
-                    "**/request/**",
-                    "**/response/**",
-                    "**/config/**",
-                    "**/exception/**",
-                    "**/mapper/**",
-                    "**/common/**",
-                    "**/*Application*",
-                    "**/*MapperImpl*"
-                )
-            }
-        )
+        afterEvaluate {
+            classDirectories.setFrom(files(classDirectories.files.map {
+                fileTree(it).matching {
+                    exclude(
+                        "**/adapter/**",
+                        "**/common/**",
+                        "**/core/entity/**",
+                        "**/core/exception/**",
+                        "**/core/usecase/input/**",
+                        "**/core/usecase/output/**",
+                        "**/*Application*",
+                        "**/*Config*",
+                        "**/*DTO*"
+                    )
+                }
+            }))
+        }
     }
 }
 

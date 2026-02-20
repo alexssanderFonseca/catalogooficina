@@ -18,4 +18,8 @@ public interface PecaInsumoJpaRepository extends JpaRepository<PecaInsumoEntity,
     @Modifying
     @Query("update PecaInsumoEntity p set p.quantidadeEstoque = p.quantidadeEstoque - :quantidade where p.id = :id and p.quantidadeEstoque >= :quantidade")
     int decrementStock(UUID id, Integer quantidade);
+
+    @Modifying
+    @Query("update PecaInsumoEntity p set p.quantidadeEstoque = p.quantidadeEstoque + :quantidade where p.id = :id")
+    void incrementStock(UUID id, Integer quantidade);
 }
