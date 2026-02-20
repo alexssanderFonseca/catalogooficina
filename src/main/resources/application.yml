@@ -24,7 +24,7 @@ management:
 
 otel:
   service:
-    name: catalogo
+    name: ${OTEL_SERVICE_NAME:catalogo}
     resource:
       attributes:
         environment: ${OTEL_ENVIRONMENT:k8s} # Default to k8s if not set

@@ -31,6 +31,7 @@ public class PecaInsumoController {
     private final AtualizarPecaInsumoUseCase atualizarPecaInsumoUseCase;
     private final DeletarPecaInsumoUseCase deletarPecaInsumoUseCase;
     private final DarBaixaEstoquePecaInsumoUseCase darBaixaEstoquePecaInsumoUseCase;
+    private final ReporEstoquePecaInsumoUseCase reporEstoquePecaInsumoUseCase;
     private final PecaInsumoControllerMapper mapper;
 
     @Operation(summary = "Listar todas as peças e insumos")
@@ -113,6 +114,17 @@ public class PecaInsumoController {
         @PutMapping("/dar-baixa-estoque")
         public ResponseEntity<Void> darBaixaEstoque(@RequestBody @Valid List<DarBaixaEstoqueRequest> requests) {
             darBaixaEstoquePecaInsumoUseCase.darBaixaEstoque(requests);
+            return ResponseEntity.noContent().build();
+        }
+
+        @Operation(summary = "Realizar reposição de estoque de peças/insumos")
+        @ApiResponses(value = {
+                @ApiResponse(responseCode = "204", description = "Reposição de estoque realizada com sucesso"),
+                @ApiResponse(responseCode = "400", description = "Requisição inválida")
+        })
+        @PutMapping("/repor-estoque")
+        public ResponseEntity<Void> reporEstoque(@RequestBody @Valid List<DarBaixaEstoqueRequest> requests) {
+            reporEstoquePecaInsumoUseCase.reporEstoque(requests);
             return ResponseEntity.noContent().build();
         }
     }

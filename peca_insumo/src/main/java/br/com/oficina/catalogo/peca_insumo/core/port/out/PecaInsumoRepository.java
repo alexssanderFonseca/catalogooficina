@@ -17,6 +17,8 @@ public interface PecaInsumoRepository {
 
     boolean decrementarEstoque(UUID id, Integer quantidade);
 
+    void incrementarEstoque(UUID id, Integer quantidade);
+
     void atualizar(PecaInsumo pecaInsumo);
 
     void deletar(UUID id);

@@ -57,6 +57,11 @@ public class PecaInsumoJpaRepositoryAdapter implements PecaInsumoRepository {
     }
 
     @Override
+    public void incrementarEstoque(UUID id, Integer quantidade) {
+        repository.incrementStock(id, quantidade);
+    }
+
+    @Override
     public void atualizar(PecaInsumo pecaInsumo) {
         var entity = mapper.toEntity(pecaInsumo);
         repository.save(entity);
