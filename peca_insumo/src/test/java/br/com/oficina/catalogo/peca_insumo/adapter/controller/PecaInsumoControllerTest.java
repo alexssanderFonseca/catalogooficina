@@ -46,6 +46,8 @@ class PecaInsumoControllerTest {
     @MockitoBean
     private DeletarPecaInsumoUseCase deletarPecaInsumoUseCase;
     @MockitoBean
+    private ReporEstoquePecaInsumoUseCase reporEstoquePecaInsumoUseCase;
+    @MockitoBean
     private PecaInsumoControllerMapper mapper;
 
 
